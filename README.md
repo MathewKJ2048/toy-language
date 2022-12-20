@@ -1,91 +1,83 @@
 # toy-language
-A C-like toy language compiler front-end written using bison and flex
 
-## output:
-0) errors and warnings
-1) memory offset
-2) TAC
+A C-like toy language compiler front-end written using bison and flex.
 
-## constructs supported:
-0) comments  
-1) expressions  
-2) declarations  
-3) assignment  
-4) combined declaration/assignment  
-5) if  
-6) if else 
-7) if else if ladder  
-8) for  
-9) while  
-10) do while  
-11) break  
-12) continue  
-13) type casting  
-14) boolean expressions (with short-circuit code)  
-15) goto  
+## Output:
+- memory offset for each variable
+- TAC
+- errors
+- warnings
 
-## types supported:
-int  
-float  
-char  
-double  
-long  
-arbitrary dimensional arrays  
-arbitrary depth pointers  
 
-## verification:
-### hard rules (produces errors)
-1) all variables must be declared before being used  
-2) two variables cannot share name if their scopes intersect  
-3) variables cannot be used outside their scope  
-4) label names should be unique  
-### soft rules (produces warnings)  
-1) variables must be initialized before use  
-2) a variable, once declared, must be used atleast once  
-3) type of lvalue should be compatible with type of rvalue  
+## Constructs supported:
+- comments  
+- expressions  
+- declarations  
+- assignment  
+- combined declaration/assignment  
+- if  
+- if else 
+- if else if ladder  
+- for  
+- while  
+- do while  
+- break  
+- continue  
+- type casting  
+- boolean expressions (with short-circuit code)  
+- goto  
+
+
+## Verification:
+
+### Hard rules (produces errors if violated)
+
+- All variables must be declared before being used.  
+- Two variables cannot share name if their scopes intersect.  
+- Variables cannot be used outside their scope.  
+- Label names should be unique.
+
+### Soft rules (produces warnings if violated)  
+- Variables must be initialized before use.  
+- A variable, once declared, must be used atleast once.  
+- The type of the lvalue should be compatible with the type of the rvalue.  
 
 
 
 
 ## Datatypes:
 
-### integral
-char 1  
-short 2  
-int 4  
-long 8  
+|name|bytes|
+|----|-----|
+|char|1|
+|short|2|
+|int|4|
+|float|4|
+|long|8|
+|double|8|
 
-### floating point
-float 4  
-double 8  
-
-explicit integers are treated as char by default  
-
-if a value has a point, it is treated as float by default  
-(double)0.1 is a double  
+Explicit integers are treated as char by default.  
+If a value has a point, it is treated as float by default.  
+`(double)0.1` is a double.  
 
 
 
 
-## shift conflict errors:
+## Shift-reduce conflicts:
 
 ```
 if(((a)))
 {
-
 }
 else
 {
-
 }
 ```
 
-here, the placements of brackets is ambiguous between the booleam and arithmetic expressions
-it could be (e), e = (a)
-of ((e)), e = a
-default action of shifting is a suitable solution for this problem
-correctness of generated code is not affected
+Here, the placements of brackets is ambiguous between the boolean and arithmetic expressions;
+it could be `(e)` where `e -> (a)` or `((e))` where `e -> a`  
 
-sr conflict due to dangling else problem
-solution: default shift
-this causes else to be matched with nearest if
+Setting the default action to shifting is a suitable solution for this problem since the correctness of generated code is not affected.
+
+SR conflicts due to 'dangling else' problem can be solved by setting the default action to shift, which
+causes 'else' to be matched with nearest 'if'.
